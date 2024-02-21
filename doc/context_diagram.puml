@@ -1,0 +1,19 @@
+@startuml context_diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/latest/C4_Context.puml
+
+LAYOUT_TOP_DOWN()
+
+Person(user, "Пользователь", "Использует социальную сеть для общения, публикации, просмотра контента.")
+System(communityApp, "Социальная Сеть", "Платформа для общения, обмена публикациями и взаимодействия пользователей.")
+
+
+System_Ext(statisticService, "Сервис Статистики", "Сервис для хранения и обработки статистики постов, такой как лайки и просмотры. ClickHouse")
+System_Ext(postCommentService, "Сервис Постов и Комментариев", "Сервис для работы с постами и комментариями. MySQL.")
+
+Rel(user, communityApp, "Использует")
+Rel(communityApp, postCommentService, "Запросы")
+Rel_R(communityApp, statisticService, "Передает статистику через брокер сообщений")
+
+
+@enduml

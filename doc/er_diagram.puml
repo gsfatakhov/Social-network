@@ -1,0 +1,58 @@
+@startuml er_diagram
+
+object Post {
+  +id: uint64
+  title: string
+  content: text
+  author_id: uint64
+  created_at: datetime 
+}
+
+object User {
+  +id: uint64
+  username: string
+  email: string
+  password_hash: varchar
+  created_at: datetime(timestamp)
+}
+
+object Comment {
+  +id: uint64
+  post_id: uint64
+  author_id: uint64
+  content: text
+  created_at: datetime(timestamp)
+}
+
+object Statistic {
+  +id:uint64
+  post_id: uint64
+  views_count: uint64
+  likes_count: uint64
+  last_updated: datetime(timestamp)
+}
+
+object Like {
+  +author_id: uint64
+  +post_id: uint64
+  created_at: datetime(timestamp)
+}
+
+object View {
+  +author_id: uint64
+  +created_at: datetime(timestamp)
+}
+
+User --|> Post : "Публикует"
+Post --|> Comment : "Содержит"
+User --|> Comment : "Оставляет"
+Post --|> Statistic : "Имеет"
+User --|>  Like : "Ставит лайк"
+User --|>  View : "Просматривает"
+Post --|>  Like : "Получает лайк"
+Post --|>  View : "Получает просмотр"
+
+Statistic --|>  View : "Учитывает"
+Statistic --|>  Like : "Учитывает"
+
+@enduml

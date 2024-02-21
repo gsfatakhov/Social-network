@@ -1,0 +1,37 @@
+@startuml container_diagram
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/latest/C4_Container.puml
+
+LAYOUT_TOP_DOWN()
+
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+
+!include DEVICONS/go.puml
+!include DEVICONS/mysql.puml
+!include DEVICONS/database.puml
+
+Person(user, "Пользователь", "Использует социальную сеть.")
+
+Container(webApp, "Фронтенд Приложение", "Vue.js", "Интерфейс пользователя, взаимодействующий с API социальной сети.")
+Container(communityApi, "API Социальной Сети", "GoLang", "Представляет основные функции социальной сети для клиентских приложений.", "go")
+
+ContainerDb(postCommentDb, "База данных Постов и Комментариев", "MySQL", "Хранит информацию о постах и комментариях.", "mysql")
+ContainerDb(userDb, "База данных Пользователей", "MySQL", "Содержит данные о пользователях социальной сети.", "mysql")
+ContainerDb(statisticDb, "База данных Статистики", "ClickHouse", "Хранит статистические данные о постах, такие как просмотры и лайки.", "database")
+
+Container(postCommentService, "Сервис Постов и Комментариев", "GoLang", "Управляет постами и комментариями пользователей.", "go")
+Container(statisticService, "Сервис Статистики", "GoLang", "Собирает и обрабатывает статистические данные по постам.", "go")
+
+Container(messageBroker, "Брокер сообщений", "Kafka", "Осуществляет асинхронное взаимодействие между компонентами системы, например, передачу событий о лайках и просмотрах.")
+
+Rel(user, webApp, "Использует")
+Rel(webApp, communityApi, "Вызовы API", "REST")
+Rel(communityApi, postCommentService, "Вызовы", "gRPC")
+Rel(communityApi, statisticService, "Вызовы", "gRPC")
+Rel(communityApi, userDb, "Взаимодействие с БД", "gorm")
+Rel(postCommentService, postCommentDb, "Взаимодействие с БД", "gorm")
+Rel(statisticService, statisticDb, "Взаимодействие с БД", "Query запросы")
+Rel_L(communityApi, messageBroker, "Публикует события")
+Rel_R(statisticService, messageBroker, "Подписывается на события")
+
+@enduml
